@@ -1,0 +1,23 @@
+#Build Artifacts.
+bin/
+obj/
+
+#Package directories (if not handled by dotnet new gitignore):
+/packages/
+
+#Rider-specific files.
+.idea/
+*.sln.iml
+riderModule.iml
+/_ReSharper.Caches/
+
+
+
+#User-specific files.
+*.user
+*.suo
+
+
+#Other common exclusions.
+*.log
+*.pdb
