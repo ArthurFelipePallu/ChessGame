@@ -1,4 +1,6 @@
-﻿namespace Chess_Console_Project.Board;
+﻿using Chess_Console_Project.Board.Exceptions;
+
+namespace Chess_Console_Project.Board;
 
 public struct ChessNotationPosition
 {
@@ -15,14 +17,14 @@ public struct ChessNotationPosition
     private void ValidateRow(int row)
     {
         if(row is < 1 or > MaxChessBoardSize)
-            throw new ArgumentOutOfRangeException($"[CHESS NOTRIFICATION POSITION] Row {row} is out of range [1 - 8] ");
+            throw new ChessException($"[CHESS NOTRIFICATION POSITION] Row {row} is out of range [1 - 8] ");
         this.Row = row;
     }
     private void ValidateColumn(char col)
     {
         col = char.ToUpper(col);
         if(col is < 'A' or > 'H')
-            throw new ArgumentOutOfRangeException($"[CHESS NOTRIFICATION POSITION] Column {col} is out of range [a - h] ");
+            throw new ChessException($"[CHESS NOTRIFICATION POSITION] Column {col} is out of range [a - h] ");
         this.Col = col;
     }
 

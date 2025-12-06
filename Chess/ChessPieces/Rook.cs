@@ -11,6 +11,7 @@ public class Rook : Piece
         Value = 5;
         Name = "Rook";
         _chessNotation = 'R';
+        _pieceType = PieceType.Rook;
     }
     
 }

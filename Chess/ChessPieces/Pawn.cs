@@ -11,5 +11,6 @@ public class Pawn : Piece
         Value = 1;
         Name = "Pawn";
         _chessNotation = 'P';
+        _pieceType = PieceType.Pawn;
     }
 }
