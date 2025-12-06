@@ -22,3 +22,6 @@ var piece = chessBoard.AccessPieceAtChessNotationPosition(newPosition);
 
 Console.WriteLine(piece.GetPieceColor() + " "+  piece.GetPieceTypeAsString());
 
+chessBoard.RemovePieceFromBoardAt(newPosition.ToPosition());
+
+chessBoard.PrintBoardExtension();

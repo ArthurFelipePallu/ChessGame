@@ -30,14 +30,12 @@ public class ChessBoard
         ValidateNewPiecePositionNotTaken(position);
         AddPieceOfTypeAndColorAtPosition(pieceType,PieceColor.Black,position);
     }
-    
     private void AddPieceOfTypeAndColorAtPosition(PieceType pieceType,PieceColor color, Position position) 
     {
         var piece = CreateNewPieceOfTypeAndColorAtPosition(pieceType,color,position);
         piece.SetPiecePosition(position);
         Board[position.Row, position.Column] = piece;
     }
-
     private Piece CreateNewPieceOfTypeAndColorAtPosition(PieceType pieceType,PieceColor pieceColor,Position position)
     {
         switch (pieceType)
@@ -59,6 +57,27 @@ public class ChessBoard
     }
 
 
+    /// <summary>
+    /// REMOVE PIECE METHODS
+    /// </summary>
+    public Piece RemovePieceFromBoardAt(Position pos)
+    {
+        return RemovePieceFromBoardAtCoordinates(pos.Row, pos.Column);
+    }
+    public Piece RemovePieceFromBoardAtCoordinates(int row,int col)
+    {
+        if (!HasPieceAtCoordinate(row, col))
+        {
+            throw new BoardException($"[CHESS BOARD] No Piece to remove at [ {row} , s{col} ]");
+        }
+
+        var removedPiece = Board[row, col];
+        Board[row, col] = null;
+        return removedPiece;
+    }
+    
+    
+    
     /// <summary>
     /// VERIFICATION METHODS
     /// </summary>
