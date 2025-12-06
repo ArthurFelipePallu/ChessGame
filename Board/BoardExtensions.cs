@@ -8,6 +8,7 @@ public static class BoardExtensions
     {
         for (var i = 0; i < board.MaxChessBoardSize; i++)
         {
+            board.WriteRowName(i);
             for (var j = 0; j < board.MaxChessBoardSize; j++)
             {
                 var piece = board.AccessPieceAtCoordinates(i, j);
@@ -19,9 +20,39 @@ public static class BoardExtensions
             }
             Console.WriteLine(); // QUEBRA LINHA
         }
+        board.WriteSeparationLine();
+        board.WriteColumnNames();
     }
 
+    private static void WriteRowName(this ChessBoard board, int row)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.Write(8 - row + " |");
+    }
 
+    private static void WriteSeparationLine(this ChessBoard board)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        
+        Console.Write("   ");
+        for (var i = 0; i < board.MaxChessBoardSize; i++)
+        {
+            Console.Write($"___");
+        }
+    }
+
+    private static void WriteColumnNames(this ChessBoard board)
+    {
+        Console.WriteLine(); // QUEBRA LINHA
+        
+        Console.Write("   ");
+        for (var i = 0; i < board.MaxChessBoardSize; i++)
+        {
+            char letter = Convert.ToChar(i + 65);
+            Console.Write($" {letter} ");
+        }
+        Console.WriteLine(); // QUEBRA LINHA
+    }
     public static void CreateChessBoardInitialPosition(this ChessBoard board)
     {
         try
