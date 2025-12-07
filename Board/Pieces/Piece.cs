@@ -1,4 +1,6 @@
-﻿namespace Chess_Console_Project.Board.Pieces;
+﻿using System.Drawing;
+
+namespace Chess_Console_Project.Board.Pieces;
 
 public abstract class Piece
 {
@@ -29,6 +31,11 @@ public abstract class Piece
         Position = position;
     }
 
+    public void IncreaseTimesMoved()
+    {
+        TimesMoved++;
+    }
+
     /// <summary>
     /// PIECE TYPE
     /// </summary>
@@ -54,10 +61,14 @@ public abstract class Piece
     {
         return _pieceColor.ToString();
     }
-    
+
+    public string GetPieceNotation()
+    {
+        return $" {ChessNotation.ToString()} ";
+    }
     
     public override string ToString()
     {
-        return $" {ChessNotation.ToString()} ";
+        return $" {_pieceColor.ToString()} {Name} ";
     }
 }
