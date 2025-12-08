@@ -13,4 +13,9 @@ public class Bishop : Piece
         ChessNotation = 'B';
         PieceType = PieceType.Bishop;
     }
+
+    protected override void CalculatePossibleMoves()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -92,6 +92,9 @@ public class ChessBoard
         Board[row, col] = piece;
     }
     
+    
+    
+    
     /// <summary>
     /// VERIFICATION METHODS
     /// </summary>
@@ -109,7 +112,11 @@ public class ChessBoard
         
         return Board[row, col] is not null;
     }
-
+    public PieceColor BoardPositionHasPieceOfColor(Position position)
+    {
+        var piece = AccessPieceAtPosition(position);
+        return piece.GetPieceColor();
+    }
     
 
 

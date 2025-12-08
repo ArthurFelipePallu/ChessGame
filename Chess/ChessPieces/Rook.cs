@@ -13,5 +13,8 @@ public class Rook : Piece
         ChessNotation = 'R';
         PieceType = PieceType.Rook;
     }
-    
+    protected override void CalculatePossibleMoves()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -12,6 +12,11 @@ public class Position
 
     public Position(int row, int column)
     {
+        SetPosition(row,column);
+    }
+
+    public void SetPosition(int row, int column)
+    {
         ValidateRow(row);
         ValidateColumn(column);
     }

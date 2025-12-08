@@ -13,4 +13,9 @@ public class Pawn : Piece
         ChessNotation = 'P';
         PieceType = PieceType.Pawn;
     }
+    
+    protected override void CalculatePossibleMoves()
+    {
+        throw new NotImplementedException();
+    }
 }

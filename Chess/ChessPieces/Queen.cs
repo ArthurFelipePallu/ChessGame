@@ -13,4 +13,8 @@ public class Queen : Piece
         ChessNotation = 'Q';
         PieceType = PieceType.Queen;
     }
+    protected override void CalculatePossibleMoves()
+    {
+        throw new NotImplementedException();
+    }
 }
