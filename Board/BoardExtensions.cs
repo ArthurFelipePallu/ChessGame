@@ -83,6 +83,7 @@ public static class BoardExtensions
         board.WriteSeparationLine();
         board.WriteColumnNames();
     }
+    
 
     private static void BoardBackGroundColor(this ChessBoard board, int i, int j)
     {
@@ -90,13 +91,13 @@ public static class BoardExtensions
     }
     
     
-    private static void WriteRowName(this ChessBoard board, int row)
+    public static void WriteRowName(this ChessBoard board, int row)
     {
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.Write(8 - row + " |");
     }
 
-    private static void WriteSeparationLine(this ChessBoard board)
+    public static void WriteSeparationLine(this ChessBoard board)
     {
         Console.ForegroundColor = ConsoleColor.DarkGray;
         
@@ -107,7 +108,7 @@ public static class BoardExtensions
         }
     }
 
-    private static void WriteColumnNames(this ChessBoard board)
+    public static void WriteColumnNames(this ChessBoard board)
     {
         Console.WriteLine(); // QUEBRA LINHA
         
