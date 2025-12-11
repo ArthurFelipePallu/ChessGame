@@ -33,4 +33,16 @@ public class Position
     {
         return $"L:{Row}, C:{Column}";
     }
+    
+    public ChessNotationPosition ToChessNotationPosition()
+    {
+        //VALOR ASCII de A = 65 e H = 72
+        //Subtraindo 65  A = 0  e H = 7
+        
+        //Notação de Tabuleiro vai de 1 - 8
+        //Subtraindo 1 para acessar
+        //posições da matriz de 0 a 7
+        
+        return new ChessNotationPosition( int.Abs(Row -MaxChessBoardSize) + 1,(char)(Column + 65) );
+    }
 }

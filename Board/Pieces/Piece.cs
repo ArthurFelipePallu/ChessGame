@@ -196,17 +196,13 @@ public abstract class Piece
     {
         return _pieceColor;
     }
-    public string GetPieceColroAsString()
-    {
-        return _pieceColor.ToString();
-    }
 
     /// <summary>
     /// PIECE NOTATION
     /// </summary>
     public string GetPieceNotation()
     {
-        return $" {ChessNotation.ToString()} ";
+        return $"{ChessNotation.ToString()}";
     }
     
     

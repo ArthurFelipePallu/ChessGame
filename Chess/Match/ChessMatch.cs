@@ -1,6 +1,8 @@
 ﻿using Chess_Console_Project.Board;
 using Chess_Console_Project.Chess.Player;
 using Chess_Console_Project.Board.Exceptions;
+using Chess_Console_Project.Chess.Chess_Movement;
+using Chess_Console_Project.Chess.Enums;
 using Chess_Console_Project.Chess.Exceptions;
 
 namespace Chess_Console_Project.Chess.Match;
@@ -14,11 +16,13 @@ public class ChessMatch
     private Screen _screen;
     private ChessPlayer _playerWhite;
     private ChessPlayer _playerBlack;
+    private ChessMovement _chessMovement;
 
     public ChessMatch()
     {
         _screen = new Screen();
-        _matchStatus = MatchStatus.WaitingForPlayers;
+        _matchStatus = MatchStatus.MainMenu;
+        _chessMovement = new ChessMovement();
     }
 
     /// <summary>
@@ -28,6 +32,11 @@ public class ChessMatch
     {
         switch (_matchStatus)
         {
+            case MatchStatus.MainMenu:
+                _screen.PrintMainMenu();
+                _screen.ScreenWriteAndWaitForEnterToContinue("Welcome to chess console!");
+                _matchStatus = MatchStatus.WaitingForPlayers;
+                break;
             case MatchStatus.WaitingForPlayers:
                 WaitForPlayers();
                 _screen.ScreenWriteAndWaitForEnterToContinue("Players have gathered, Starting Game");
@@ -68,6 +77,7 @@ public class ChessMatch
                         break;
                     }
                     ExecuteMovement(originChessNotationPositionPosition.ToPosition(), destinationChessNotationPosition.ToPosition());
+                    _chessMovement.SaveMovement(piece , MovementType.Move,destinationChessNotationPosition);
                 }
                 catch (Exception e)
                 {

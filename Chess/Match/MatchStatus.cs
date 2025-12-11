@@ -2,6 +2,7 @@
 
 public enum MatchStatus
 {
+    MainMenu,
     WaitingForPlayers,
     WaitingForPlayer,
     Starting,
