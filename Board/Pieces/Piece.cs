@@ -110,7 +110,7 @@ public abstract class Piece
     
     public abstract void AfterMoveVerification();
     public abstract void CalculatePossibleMoves();
-    protected void CheckPossibleMovesInDirection(HorizontalDirections hDirection, VerticalDirections vDirection,int maxDistantMovesToCheck = 99 , MovementType hasToBeOfMovementType = MovementType.Any)
+    protected void CheckPossibleMovesInDirection(HorizontalDirections hDirection, VerticalDirections vDirection,int maxDistantMovesToCheck = 99 )
     {
         var countHelper = 0;
         var keepGoing = true;
@@ -127,18 +127,9 @@ public abstract class Piece
             possiblePosition.SetPosition(possibleMovePosX, possibleMovePosY);
 
             var move = CheckMovementTypeAt(possiblePosition);
-
-            if (hasToBeOfMovementType != MovementType.Any)
-            {
-                if(move == hasToBeOfMovementType)
-                    SetPositionAsPossibleMove(possiblePosition);
-                return;
-            }
-            
-
             switch (move)
             {
-                case MovementType.IllegalMove:
+                case MovementType.Illegal:
                     keepGoing = false;
                     break;
                 case MovementType.Take:
@@ -153,24 +144,15 @@ public abstract class Piece
                 keepGoing = false;
         }
     }
-    protected MovementType TryPositionPossibleMove(Position pos,params MovementType[] extraRestrictions)
+    protected bool PossibleMoveAtPositionIsLegalAndOfAllowedTypes(Position pos,params MovementType[] allowedMovementTypes)
     {
         var move = CheckMovementTypeAt(pos);
-        if (move != MovementType.IllegalMove)
-        {
-            
-            if(extraRestrictions == null)
-            {
-                SetPositionAsPossibleMove(pos);
-                return move;
-            }
-            else if (!extraRestrictions.Contains(move))
-            {
-                SetPositionAsPossibleMove(pos);
-            }
-        }
-
-        return move;
+        return move != MovementType.Illegal && allowedMovementTypes.Contains(move);
+    }
+    protected bool PossibleMoveAtPositionIsLegalAndNotOfNotAllowedTypes(Position pos,params MovementType[] notAllowedMovementTypes)
+    {
+        var move = CheckMovementTypeAt(pos);
+        return move != MovementType.Illegal && !notAllowedMovementTypes.Contains(move);
     }
     private MovementType CheckMovementTypeAt(Position position)
     {
@@ -180,20 +162,24 @@ public abstract class Piece
         }
         catch (BoardException e)
         {
-            return MovementType.IllegalMove;
+            return MovementType.Illegal;
         }
 
-        var piece = Board.AccessPieceAtPosition(position);
+        var pieceAtPosition = Board.AccessPieceAtPosition(position);
         
-        if (piece == null)
+        if (pieceAtPosition == null)
             return MovementType.Move;
+
+        if (pieceAtPosition.GetPieceColor() == PieceColor)
+        {
+            if(pieceAtPosition.PieceType == PieceType)
+                return MovementType.SamePiece;
+            return MovementType.AllyPiece;
+        }
         
-        if (piece.GetPieceColor() == PieceColor)
-            return MovementType.IllegalMove;
-        
-        return piece.GetPieceType() == PieceType.King ? MovementType.Check : MovementType.Take;
+        return pieceAtPosition.GetPieceType() == PieceType.King ? MovementType.Check : MovementType.Take;
     }
-    private void SetPositionAsPossibleMove(Position pos)
+    protected void SetPositionAsPossibleMove(Position pos)
     {
         _possibleMoves[pos.Row,pos.Column] = true;
     }

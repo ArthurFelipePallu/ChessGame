@@ -2,9 +2,10 @@
 
 public enum MovementType
 {
-    Any,
     Move,
     Take,
     Check,
-    IllegalMove
+    Illegal,
+    AllyPiece,
+    SamePiece
 }

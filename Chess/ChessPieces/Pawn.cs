@@ -24,21 +24,20 @@ public class Pawn : Piece
         
         for (var i = 1; i <= firstPawnMove; i++)
         {
-            var hasPieceAhead = Board.HasPieceAtCoordinate(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
-            if (!hasPieceAhead)
-            {
-                var pos = new Position(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
-                var move = TryPositionPossibleMove(pos,MovementType.Take);
-                if (move == MovementType.Take)
-                    break;
-            }
-            else break;
+            // var hasPieceAhead = Board.HasPieceAtCoordinate(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
+            // if (!hasPieceAhead)
+            // {
+            var pos = new Position(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
+            if (PossibleMoveAtPositionIsLegalAndOfAllowedTypes(pos,MovementType.Move))
+                SetPositionAsPossibleMove(pos);
+            // }
+            // else break;
         }
         //Posição de Cima e Esquerda e precisa ser Movimento de Captura
-        CheckPossibleMovesInDirection(HorizontalDirections.Left,vDir,1,MovementType.Take);
-
+        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Left,MovementType.Take);
+        
         //Posição de Cima e Direita e precisa ser Movimento de Captura
-        CheckPossibleMovesInDirection(HorizontalDirections.Right,vDir,1,MovementType.Take);
+        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Right,MovementType.Take);
     }
 
     public override void AfterMoveVerification()
@@ -46,5 +45,12 @@ public class Pawn : Piece
         throw new NotImplementedException();
     }
     
-    
+    private void PossibleMovementAtPositionWithModifiersIsOfMoveType(int rowModifier, int columnModifier,MovementType movementType)
+    {
+        var pos = new Position(PiecePosition.Row + rowModifier, PiecePosition.Column + columnModifier);
+        if (PossibleMoveAtPositionIsLegalAndOfAllowedTypes(pos, movementType))
+        {
+            SetPositionAsPossibleMove(pos);
+        }
+    }
 }

@@ -23,9 +23,6 @@ public class ChessMovement
             var toSaveNotation = "";
             switch (move)
             {
-                case MovementType.Any:
-                    ThrowMovementNotationException();
-                    break;
                 case MovementType.Move:
                     toSaveNotation = GetMovementChessNotation(piece,destination);
                     break;
@@ -35,7 +32,7 @@ public class ChessMovement
                 case MovementType.Check:
                     //toSaveNotation = GetMovementChessNotation();
                     break;
-                case MovementType.IllegalMove:
+                case MovementType.Illegal:
                     ThrowMovementNotationException();
                     break;
                 default:
