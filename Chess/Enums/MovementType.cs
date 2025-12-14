@@ -3,9 +3,8 @@
 public enum MovementType
 {
     Move,
-    Take,
-    Check,
     Illegal,
     AllyPiece,
-    SamePiece
+    SamePiece,
+    TakeEnemyPiece,
 }

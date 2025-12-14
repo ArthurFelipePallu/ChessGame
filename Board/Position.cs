@@ -1,4 +1,5 @@
 ﻿using Chess_Console_Project.Board.Exceptions;
+using Chess_Console_Project.Chess.Exceptions;
 
 namespace Chess_Console_Project.Board;
 
@@ -23,10 +24,14 @@ public class Position
     
     private void ValidateRow(int row)
     {
+        if (row is < 0 or >= MaxChessBoardSize)
+            throw new MovementException("Invalid position Row");
         Row = row;
     }
     private void ValidateColumn(int col)
     {
+        if (col is < 0 or >= MaxChessBoardSize)
+            throw new MovementException("Invalid position Column");
         Column = col;
     }
     public override string ToString()

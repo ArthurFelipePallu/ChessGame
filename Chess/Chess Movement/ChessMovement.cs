@@ -26,11 +26,8 @@ public class ChessMovement
                 case MovementType.Move:
                     toSaveNotation = GetMovementChessNotation(piece,destination);
                     break;
-                case MovementType.Take:
+                case MovementType.TakeEnemyPiece:
                    // toSaveNotation = GetTakeChessNotation();
-                    break;
-                case MovementType.Check:
-                    //toSaveNotation = GetMovementChessNotation();
                     break;
                 case MovementType.Illegal:
                     ThrowMovementNotationException();

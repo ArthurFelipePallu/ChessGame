@@ -28,16 +28,16 @@ public class Pawn : Piece
             // if (!hasPieceAhead)
             // {
             var pos = new Position(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
-            if (PossibleMoveAtPositionIsLegalAndOfAllowedTypes(pos,MovementType.Move))
+            if (PossibleMoveAtPositionIsOfAllowedTypes(pos,MovementType.Move))
                 SetPositionAsPossibleMove(pos);
             // }
             // else break;
         }
         //Posição de Cima e Esquerda e precisa ser Movimento de Captura
-        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Left,MovementType.Take);
+        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Left,MovementType.TakeEnemyPiece);
         
         //Posição de Cima e Direita e precisa ser Movimento de Captura
-        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Right,MovementType.Take);
+        PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Right,MovementType.TakeEnemyPiece);
     }
 
     public override void AfterMoveVerification()
@@ -48,7 +48,7 @@ public class Pawn : Piece
     private void PossibleMovementAtPositionWithModifiersIsOfMoveType(int rowModifier, int columnModifier,MovementType movementType)
     {
         var pos = new Position(PiecePosition.Row + rowModifier, PiecePosition.Column + columnModifier);
-        if (PossibleMoveAtPositionIsLegalAndOfAllowedTypes(pos, movementType))
+        if (PossibleMoveAtPositionIsOfAllowedTypes(pos, movementType))
         {
             SetPositionAsPossibleMove(pos);
         }

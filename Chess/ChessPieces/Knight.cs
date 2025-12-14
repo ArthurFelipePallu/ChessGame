@@ -32,39 +32,30 @@ public class Knight : Piece
     private void HorizontalLMovements()
     {
         // L para Esquerda e para cima
-        PossibleMovementAtPositionIsMoveOrTake(-1 , -2);
+        PossibleMovementAtPositionIsMoveOrTake(-2 , -1);
         
         // L para Esquerda e para baixo
-        PossibleMovementAtPositionIsMoveOrTake(1, -2);
+        PossibleMovementAtPositionIsMoveOrTake(-2, 1);
         
         // L para Direita e para cima
-        PossibleMovementAtPositionIsMoveOrTake(-1 , 2);
+        PossibleMovementAtPositionIsMoveOrTake(2 , -1);
         
         // L para Direita e para baixo
-        PossibleMovementAtPositionIsMoveOrTake(1 , 2);
+        PossibleMovementAtPositionIsMoveOrTake(2 , 1);
     }
     private void VerticalLMovements()
     {
         // L para Cima e para Esquerda
-        PossibleMovementAtPositionIsMoveOrTake(-2 , -1);
-        
-        // L para Baixo e para Esquerda
-        PossibleMovementAtPositionIsMoveOrTake(2 , -1);
-        
-        // L para Cima e para Direita
-        PossibleMovementAtPositionIsMoveOrTake(-2 , 1);
-        
-        // L para Baixo e para Direita
-        PossibleMovementAtPositionIsMoveOrTake(2 , 1);
-    }
+    PossibleMovementAtPositionIsMoveOrTake(-1, -2);
+    
+    // L para Baixo e para Esquerda
+    PossibleMovementAtPositionIsMoveOrTake(-1 , 2);
+    
+    // L para Cima e para Direita
+    PossibleMovementAtPositionIsMoveOrTake(1 , -2);
+    
+    // L para Baixo e para Direita
+    PossibleMovementAtPositionIsMoveOrTake(1 , 2);
+     }
 
-    private void PossibleMovementAtPositionIsMoveOrTake(int rowModifier, int columnModifier)
-    {
-        
-        var pos = new Position(PiecePosition.Row + rowModifier, PiecePosition.Column + columnModifier);
-        if (PossibleMoveAtPositionIsLegalAndOfAllowedTypes(pos, MovementType.Move, MovementType.Take))
-        {
-            SetPositionAsPossibleMove(pos);
-        }
-    }
 }

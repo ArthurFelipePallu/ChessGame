@@ -25,15 +25,15 @@ public class Bishop : Piece
         ClearPossibleMoves();
         
         //Direção Diagonal Esquerda para Cima
-        CheckPossibleMovesInDirection(HorizontalDirections.Left,VerticalDirections.Up);
+        CheckPossibleMovesInDirection(VerticalDirections.Up,HorizontalDirections.Left);
 
         //Direção Diagonal Direita para Cima
-        CheckPossibleMovesInDirection(HorizontalDirections.Right,VerticalDirections.Up);
+        CheckPossibleMovesInDirection(VerticalDirections.Up,HorizontalDirections.Right);
         
         //Direção Diagonal Esquerda para Baixo
-        CheckPossibleMovesInDirection(HorizontalDirections.Left,VerticalDirections.Down);
+        CheckPossibleMovesInDirection(VerticalDirections.Down,HorizontalDirections.Left);
         
         //Direção Diagonal Direita para Baixo
-        CheckPossibleMovesInDirection(HorizontalDirections.Right,VerticalDirections.Down);
+        CheckPossibleMovesInDirection(VerticalDirections.Down,HorizontalDirections.Right);
     }
 }

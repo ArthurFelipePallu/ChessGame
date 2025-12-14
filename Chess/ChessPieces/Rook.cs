@@ -26,15 +26,15 @@ public class Rook : Piece
         ClearPossibleMoves();
         
         //Direção para Cima
-        CheckPossibleMovesInDirection(HorizontalDirections.None,VerticalDirections.Up);
+        CheckPossibleMovesInDirection(VerticalDirections.Up,HorizontalDirections.None);
 
         //Direção para Direita 
-        CheckPossibleMovesInDirection(HorizontalDirections.Right,VerticalDirections.None);
+        CheckPossibleMovesInDirection(VerticalDirections.None,HorizontalDirections.Right);
         
         //Direção para Baixo
-        CheckPossibleMovesInDirection(HorizontalDirections.None,VerticalDirections.Down);
+        CheckPossibleMovesInDirection(VerticalDirections.Down,HorizontalDirections.None);
         
         //Direção para Esquerda
-        CheckPossibleMovesInDirection(HorizontalDirections.Left,VerticalDirections.None);
+        CheckPossibleMovesInDirection(VerticalDirections.None,HorizontalDirections.Left);
     }
 }
