@@ -37,4 +37,9 @@ public class Rook : Piece
         //Direção para Esquerda
         CheckPossibleMovesInDirection(VerticalDirections.None,HorizontalDirections.Left);
     }
+
+    public override void CalculatePossibleAttackMoves()
+    {
+        CalculatePossibleMoves();
+    }
 }

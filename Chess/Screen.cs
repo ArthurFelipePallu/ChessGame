@@ -39,7 +39,6 @@ public class Screen
     /// </summary>
     public void PrintBoard(ChessBoard board)
     {
-        ClearScreen();
         PrintBoardExtension(board);
     }
     public void PrintBoardWithPiecePossibleMovements(ChessBoard board,bool[,] possibleMoves)
@@ -157,11 +156,25 @@ public class Screen
             _ => _emptySquare
         };
     }
-    
-    
+
+
     /// <summary>
     /// PLAYER PRINT METHODS
     /// </summary>
+
+
+    public void PrintPlayerDetailedInformation(ChessPlayer player, HashSet<Piece> capturedPieces)
+    {
+        Console.WriteLine($"{player.Name}  ELO: {player.Elo}");
+        Console.WriteLine($"Playing with {player.PlayingColor.ToString()}");
+
+        Console.Write("Captured: ");
+        foreach (var piece in capturedPieces)
+        {
+            Console.Write($" {GetPieceUnicodeOrEmptySquare(piece)} ");
+        }
+        Console.WriteLine();
+    }
     public void PrintBoardAndPlayerToMove(ChessBoard board,ChessPlayer player)
     {
         PrintBoard(board);
@@ -200,7 +213,7 @@ public class Screen
     /// <summary>
     /// SCREEN METHODS
     /// </summary>
-    private void ClearScreen()
+    public static void ClearScreen()
     {
         Console.Clear();
     }
@@ -234,6 +247,7 @@ public class Screen
     }
 
 
+    
 
 
     /// <summary>

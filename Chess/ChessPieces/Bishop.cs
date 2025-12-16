@@ -36,4 +36,9 @@ public class Bishop : Piece
         //Direção Diagonal Direita para Baixo
         CheckPossibleMovesInDirection(VerticalDirections.Down,HorizontalDirections.Right);
     }
+
+    public override void CalculatePossibleAttackMoves()
+    {
+        CalculatePossibleMoves();
+    }
 }

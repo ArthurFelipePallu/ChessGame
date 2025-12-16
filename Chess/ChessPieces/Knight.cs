@@ -27,8 +27,13 @@ public class Knight : Piece
         HorizontalLMovements();
         VerticalLMovements();
     }
-    
-    
+
+    public override void CalculatePossibleAttackMoves()
+    {
+        CalculatePossibleMoves();
+    }
+
+
     private void HorizontalLMovements()
     {
         // L para Esquerda e para cima

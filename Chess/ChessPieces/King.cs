@@ -19,6 +19,9 @@ public class King : Piece
     {
         ClearPossibleMoves();
 
+        Board.UpdateAllTargetedSquaresInBoardWithAdversaryTargets(PieceColor);
+
+        
         //Posição de Cima
         CheckPossibleMoveIsNotCheck(VerticalDirections.Up,HorizontalDirections.None);
         
@@ -28,39 +31,79 @@ public class King : Piece
         //Posição de Cima e Direita
         CheckPossibleMoveIsNotCheck(VerticalDirections.Up,HorizontalDirections.Right);
         
-        // //Posição Esquerda
-        // CheckPossibleMoveIsNotCheck(HorizontalDirections.Left,VerticalDirections.None);
-        //
-        // //Posição Direita
-        // CheckPossibleMoveIsNotCheck(HorizontalDirections.Right,VerticalDirections.None);
-        //
-        // //Posição de Baixo
-        // CheckPossibleMoveIsNotCheck(HorizontalDirections.None,VerticalDirections.Down);
-        //
-        // //Posição de Baixo e Esquerda
-        // CheckPossibleMoveIsNotCheck(HorizontalDirections.Left,VerticalDirections.Down);
-        //
-        // //Posição de Baixo e Direita
-        // CheckPossibleMoveIsNotCheck(HorizontalDirections.Right,VerticalDirections.Down);
+        //Posição Esquerda
+        CheckPossibleMoveIsNotCheck(VerticalDirections.None,HorizontalDirections.Left);
+        
+        //Posição Direita
+        CheckPossibleMoveIsNotCheck(VerticalDirections.None,HorizontalDirections.Right);
+        
+        //Posição de Baixo
+        CheckPossibleMoveIsNotCheck(VerticalDirections.Down,HorizontalDirections.None);
+        
+        //Posição de Baixo e Esquerda
+        CheckPossibleMoveIsNotCheck(VerticalDirections.Down,HorizontalDirections.Left);
+        
+        //Posição de Baixo e Direita
+        CheckPossibleMoveIsNotCheck(VerticalDirections.Down,HorizontalDirections.Right);
+    }
+
+    public override void CalculatePossibleAttackMoves()
+    {
+        ClearPossibleMoves();
+
+        //Posição de Cima
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Up,(int)HorizontalDirections.None))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Up, PiecePosition.Column + (int)HorizontalDirections.None));
+
+        //Posição de Cima e Esquerda
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Up,(int)HorizontalDirections.Left))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Up, PiecePosition.Column + (int)HorizontalDirections.Left));
+        
+        //Posição de Cima e Direita
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Up,(int)HorizontalDirections.Right))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Up, PiecePosition.Column + (int)HorizontalDirections.Right));
+        
+        //Posição Esquerda
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.None,(int)HorizontalDirections.Left))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.None, PiecePosition.Column + (int)HorizontalDirections.Left));
+        
+        //Posição Direita
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.None,(int)HorizontalDirections.Right))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.None, PiecePosition.Column + (int)HorizontalDirections.Right));
+        
+        //Posição de Baixo
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Down,(int)HorizontalDirections.None))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Down, PiecePosition.Column + (int)HorizontalDirections.None));
+        
+        //Posição de Baixo e Esquerda
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Down,(int)HorizontalDirections.Left))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Down, PiecePosition.Column + (int)HorizontalDirections.Left));
+        
+        //Posição de Baixo e Direita
+        if (PossibleMovementAtPositionIsMoveOrTake((int)VerticalDirections.Down,(int)HorizontalDirections.Right))
+            SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)VerticalDirections.Down, PiecePosition.Column + (int)HorizontalDirections.Right));
     }
 
     private void CheckPossibleMoveIsNotCheck(VerticalDirections vDir, HorizontalDirections hDir)
     {
         if (!PossibleMovementAtPositionIsMoveOrTake((int)vDir, (int)hDir)) return;
-        var kingOriginalPos = PiecePosition;
-            
-        try
-        { 
-            var verifyingPosition = new Position(PiecePosition.Row + (int)vDir, PiecePosition.Column + (int)hDir);
-            SetPiecePosition(verifyingPosition);
-            if(IsInCheck())
-                SetPositionAsNotPossibleMove(verifyingPosition);
-        }
-        catch (MovementException e)
-        {
-            Console.WriteLine( "[KING IS IN CHECK VERIFICATION] : " + e.Message);
-        }
-        SetPiecePosition(kingOriginalPos);
+        //var kingOriginalPos = PiecePosition;
+
+        if(Board.IsSquareInCoordinatesTargetedByOpponent(PiecePosition.Row + (int)vDir, PiecePosition.Column + (int)hDir))
+            SetPositionAsNotPossibleMove(new Position(PiecePosition.Row + (int)vDir, PiecePosition.Column + (int)hDir));
+
+        // try
+        // { 
+        //     var verifyingPosition = new Position(PiecePosition.Row + (int)vDir, PiecePosition.Column + (int)hDir);
+        //     SetPiecePosition(verifyingPosition);
+        //     if(IsInCheck())
+        //         SetPositionAsNotPossibleMove(verifyingPosition);
+        // }
+        // catch (MovementException e)
+        // {
+        //     Console.WriteLine( "[KING IS IN CHECK VERIFICATION] : " + e.Message);
+        // }
+        // SetPiecePosition(kingOriginalPos);
     }
 
     private bool IsInCheck()

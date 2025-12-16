@@ -1,6 +1,7 @@
 ﻿using Chess_Console_Project.Board;
 using Chess_Console_Project.Chess.Player;
 using Chess_Console_Project.Board.Exceptions;
+using Chess_Console_Project.Board.Pieces;
 using Chess_Console_Project.Chess.Chess_Movement;
 using Chess_Console_Project.Chess.Enums;
 using Chess_Console_Project.Chess.Exceptions;
@@ -51,7 +52,8 @@ public class ChessMatch
             case MatchStatus.Playing:
                 try
                 {
-                    _screen.PrintBoardAndPlayerToMove(_chessBoard,PlayerToMove());
+                    PrintBoardAndPlayers();
+                    _screen.AnnouncePlayerToMove(PlayerToMove());
 
                     var originChessNotationPositionPosition = _screen.AskPlayerForPieceInBoard();
                     var piece = _chessBoard.AccessPieceAtChessNotationPosition(originChessNotationPositionPosition);
@@ -67,17 +69,15 @@ public class ChessMatch
                         break;
                     }
                     
-                    _screen.PrintBoardWithPiecePossibleMovements(_chessBoard,piece.GetAllPossibleMoves());
-                    
                     var destinationChessNotationPosition = _screen.AskPlayerForPieceDestinationInBoard(piece);
-
+                    
                     if (!piece.PositionIsInPossibleMoves(destinationChessNotationPosition.ToPosition()))
                     {
                         _screen.ScreenWriteAndWaitForEnterToContinue($"The {piece} can not move to the {destinationChessNotationPosition} square");
                         break;
                     }
-                    ExecuteMovement(originChessNotationPositionPosition.ToPosition(), destinationChessNotationPosition.ToPosition());
-                    _chessMovement.SaveMovement(piece , MovementType.Move,destinationChessNotationPosition);
+                    ExecuteMovement(piece, destinationChessNotationPosition.ToPosition());
+                    // _chessMovement.SaveMovement(piece , MovementType.Move,destinationChessNotationPosition);
                 }
                 catch (Exception e)
                 {
@@ -93,6 +93,19 @@ public class ChessMatch
         }
     }
 
+    private void PrintBoardAndPlayers()
+    {
+        _screen.PrintPlayerDetailedInformation(_playerBlack, _chessBoard.GetCapturedPieces(PieceColor.White));
+        _screen.PrintBoard(_chessBoard);
+        _screen.PrintPlayerDetailedInformation(_playerWhite, _chessBoard.GetCapturedPieces(PieceColor.Black));
+    }
+
+    private void PrintBoardWithPiecePossibleMovesAndPlayers(Piece piece)
+    {
+        _screen.PrintPlayerDetailedInformation(_playerBlack, _chessBoard.GetCapturedPieces(PieceColor.White));
+        _screen.PrintBoardWithPiecePossibleMovements(_chessBoard,piece.GetAllPossibleMoves());
+        _screen.PrintPlayerDetailedInformation(_playerWhite, _chessBoard.GetCapturedPieces(PieceColor.Black));
+    }
     private void WaitForPlayers()
     {
         //Not gonna wait 
@@ -130,6 +143,18 @@ public class ChessMatch
     {
         _movesCount++;
     }
+
+    private void ExecuteMovement(Piece piece, Position destination)
+    {
+        var actionMessage = MovePieceTo(piece,destination);
+        
+        Screen.ClearScreen();
+        _screen.PrintBoard(_chessBoard);
+        _screen.ScreenWriteAndWaitForEnterToContinue(actionMessage);
+        ChangePlayerToMove();
+    }
+    
+
     private void ExecuteMovement(Position origin, Position destination)
     {
         try
@@ -143,6 +168,7 @@ public class ChessMatch
     
             var actionMessage = MovePieceFromTo(origin,destination);
             
+            Screen.ClearScreen();
             _screen.PrintBoard(_chessBoard);
             _screen.ScreenWriteAndWaitForEnterToContinue(actionMessage);
 
@@ -181,6 +207,21 @@ public class ChessMatch
             throw new MovementException($"[ CHESS MATCH ] Piece at destination {destination.ToString()} belongs to player {_toPlay.ToString()}, it can not be taken.");
 
     }
+    private string MovePieceTo(Piece piece, Position destination)
+    {
+        _chessBoard.RemovePieceFromBoardAt(piece.GetPiecePosition());
+        piece.IncreaseTimesMoved();
+        
+        var destinationPiece = _chessBoard.AccessPieceAtPosition(destination);
+        _chessBoard.PutPieceAtDestinationPosition(piece, destination);
+        
+        if(destinationPiece != null)
+            _chessBoard.RemovePieceFromPlay(destinationPiece);
+        
+        return destinationPiece == null
+            ? $"[ CHESS MATCH ] Piece {piece} moved to destination {destination}"
+            : $"[ CHESS MATCH ] Piece [{piece}] took [{destinationPiece}] at destination [{destination}]";
+    }
     private string MovePieceFromTo(Position origin, Position destination)
     {
         var originPiece = _chessBoard.RemovePieceFromBoardAt(origin);
@@ -189,10 +230,12 @@ public class ChessMatch
         var destinationPiece = _chessBoard.AccessPieceAtPosition(destination);
         _chessBoard.PutPieceAtDestinationPosition(originPiece, destination);
         
+        if(destinationPiece != null)
+            _chessBoard.RemovePieceFromPlay(destinationPiece);
+        
         return destinationPiece == null
             ? $"[ CHESS MATCH ] Piece {originPiece} moved to destination {destination}"
             : $"[ CHESS MATCH ] Piece [{originPiece}] took [{destinationPiece}] at destination [{destination}]";
-
     }
     private void ChangePlayerToMove()
     {

@@ -60,6 +60,10 @@ public abstract class Piece
     {
         PiecePosition = position;
     }
+    public Position GetPiecePosition()
+    {
+        return PiecePosition;
+    }
 
     
     
@@ -111,6 +115,8 @@ public abstract class Piece
     
     public abstract void AfterMoveVerification();
     public abstract void CalculatePossibleMoves();
+    
+    public abstract void CalculatePossibleAttackMoves();
     protected void CheckPossibleMovesInDirection(VerticalDirections vDir, HorizontalDirections hDir,int maxDistantMovesToCheck = 8 )
     {
         var countHelper = 0;

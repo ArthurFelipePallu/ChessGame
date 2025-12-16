@@ -1,29 +1,39 @@
 ﻿using Chess_Console_Project.Board.Exceptions;
 using Chess_Console_Project.Board.Pieces;
 using Chess_Console_Project.Chess.ChessPieces;
+using Chess_Console_Project.Chess.Exceptions;
 
 namespace Chess_Console_Project.Board;
 
 public class ChessBoard
 {
     private Piece[,] Board { get; }
-    private HashSet<Piece> _inPlayPieces;
+    private HashSet<Piece> _chessPieces;
     private HashSet<Piece> _capturedPieces;
     public int MaxChessBoardSize { get; } = 8;
 
-    
+    private bool[,] AllTargetedSquares;
 
     public ChessBoard()
     {
-        _inPlayPieces = new HashSet<Piece>();
-        _capturedPieces = new HashSet<Piece>();
+        _chessPieces = [];
+        _capturedPieces = [];
         Board = new Piece[MaxChessBoardSize, MaxChessBoardSize];
+        AllTargetedSquares = new bool[MaxChessBoardSize, MaxChessBoardSize];
     }
     
     /// <summary>
     /// ADD PIECE TO BOARD METHODS
     /// </summary>
-
+    public void AddPlayingPiece(PieceColor pieceColor , PieceType pieceType,char column,int row)
+    {
+        var notationPosition = new ChessNotationPosition(row, column);
+        var pos = notationPosition.ToPosition();
+        ValidateNewPiecePositionNotTaken(notationPosition.ToPosition());
+        var piece = CreatePieceOfTypeAndColorAtPosition(pieceType,pieceColor,pos);
+        _chessPieces.Add(piece);
+        Board[pos.Row, pos.Column] = piece;
+    }
     private Piece CreatePieceOfTypeAndColorAtPosition(PieceType pieceType,PieceColor color, Position position) 
     {
         var piece = CreateNewPieceOfTypeAndColorAtPosition(pieceType,color,position);
@@ -50,18 +60,97 @@ public class ChessBoard
         throw new BoardException("[CHESS BOARD] Invalid piece type");
     }
 
-    public void AddPlayingPiece(PieceColor pieceColor , PieceType pieceType,char column,int row)
+
+
+    
+    
+    
+    public bool IsKingInCheck(PieceColor color)
     {
-        var notationPosition = new ChessNotationPosition(row, column);
-        var pos = notationPosition.ToPosition();
-        ValidateNewPiecePositionNotTaken(notationPosition.ToPosition());
-        var piece = CreatePieceOfTypeAndColorAtPosition(pieceType,pieceColor,pos);
-        _inPlayPieces.Add(piece);
-        Board[pos.Row, pos.Column] = piece;
+        var king = GetKing(color);
+        UpdateAllTargetedSquaresInBoardWithAdversaryTargets(color);
+        return IsSquareInPositionTargetedByOpponent(king.GetPiecePosition());
     }
 
 
+    public bool IsSquareInPositionTargetedByOpponent(Position position)
+    {
+        return IsSquareInCoordinatesTargetedByOpponent(position.Row, position.Column);
+    }
 
+    public bool IsSquareInCoordinatesTargetedByOpponent(int row, int column)
+    {
+        try
+        {
+            ValidateBoardCoordinates(row, column);
+            return AllTargetedSquares[row, column];
+        }
+        catch (Exception e)
+        {
+            return true;
+        }
+    }
+
+
+    public Piece GetKing(PieceColor color)
+    {
+        var piecesOfColor = GetChessPiecesInPlay(color);
+        return piecesOfColor.FirstOrDefault(piece => piece.GetPieceType() == PieceType.King) ?? throw new ChessException("[CHESS PIECES] No king was found");
+    }
+
+    public void UpdateAllTargetedSquaresInBoardWithAdversaryTargets(PieceColor pieceColor)
+    {
+        AllTargetedSquares = GetAllTargetedSquaresInBoardByPlayer(AdversaryPieceColor(pieceColor));
+        var markedSquare = " X ";
+        var emptySquare = " - ";
+        for (var i = 0; i < MaxChessBoardSize; i++)
+        {
+            for(var j = 0; j < MaxChessBoardSize; j++)
+                Console.Write($"{ (AllTargetedSquares[i, j] ?  markedSquare:emptySquare)}");
+            Console.WriteLine();
+        }
+    }
+    public bool[,] GetAllTargetedSquaresInBoardByPlayer(PieceColor pieceColor)
+    {
+        var allTargetedSquaresInBoard = new bool[MaxChessBoardSize, MaxChessBoardSize];
+        var piecesOfColor = GetChessPiecesInPlay(pieceColor);
+        foreach (var piece in piecesOfColor)
+        {
+            piece.CalculatePossibleAttackMoves();
+            for (var i = 0; i < MaxChessBoardSize; i++)
+            {
+                for(var j = 0; j < MaxChessBoardSize; j++)
+                    allTargetedSquaresInBoard[i, j] |= piece.GetAllPossibleMoves()[i,j];
+            }
+            
+        }
+
+        return allTargetedSquaresInBoard;
+    }
+    public HashSet<Piece> GetChessPiecesInPlay(PieceColor pieceColor)
+    {
+        var aux = new HashSet<Piece>();
+        foreach (var piece in _chessPieces.Where(piece => piece.GetPieceColor() == pieceColor))
+        {
+            aux.Add(piece);
+        }
+        aux.ExceptWith(GetCapturedPieces(pieceColor));
+        return aux;
+    }
+    public HashSet<Piece> GetCapturedPieces(PieceColor pieceColor)
+    {
+        var aux = new HashSet<Piece>();
+        foreach (var piece in _capturedPieces.Where(piece => piece.GetPieceColor() == pieceColor))
+        {
+            aux.Add(piece);
+        }
+        return aux;
+    }
+
+    private PieceColor AdversaryPieceColor(PieceColor pieceColor)
+    {
+        return  pieceColor == PieceColor.White ? PieceColor.Black : PieceColor.White;
+    }
 
     /// <summary>
     /// REMOVE PIECE METHODS
@@ -81,10 +170,8 @@ public class ChessBoard
         Board[row, col] = null;
         return removedPiece;
     }
-
     public void RemovePieceFromPlay(Piece piece)
     {
-        _inPlayPieces.Remove(piece);
         _capturedPieces.Add(piece);
     }
     

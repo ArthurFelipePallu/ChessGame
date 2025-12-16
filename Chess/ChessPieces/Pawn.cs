@@ -16,7 +16,7 @@ public class Pawn : Piece
     
     public override void CalculatePossibleMoves()
     {
-        ClearPossibleMoves();
+        CalculatePossibleAttackMoves();
 
         var firstPawnMove = TimesMoved == 0 ? 2 : 1;
 
@@ -33,6 +33,13 @@ public class Pawn : Piece
             // }
             // else break;
         }
+        
+    }
+
+    public override void CalculatePossibleAttackMoves()
+    {
+        ClearPossibleMoves();
+        var vDir = GetPieceColor() == PieceColor.White ? VerticalDirections.Up : VerticalDirections.Down;
         //Posição de Cima e Esquerda e precisa ser Movimento de Captura
         PossibleMovementAtPositionWithModifiersIsOfMoveType((int)vDir, (int)HorizontalDirections.Left,MovementType.TakeEnemyPiece);
         
@@ -47,10 +54,17 @@ public class Pawn : Piece
     
     private void PossibleMovementAtPositionWithModifiersIsOfMoveType(int rowModifier, int columnModifier,MovementType movementType)
     {
-        var pos = new Position(PiecePosition.Row + rowModifier, PiecePosition.Column + columnModifier);
-        if (PossibleMoveAtPositionIsOfAllowedTypes(pos, movementType))
+        try
         {
-            SetPositionAsPossibleMove(pos);
+            var pos = new Position(PiecePosition.Row + rowModifier, PiecePosition.Column + columnModifier);
+            if (PossibleMoveAtPositionIsOfAllowedTypes(pos, movementType))
+            {
+                SetPositionAsPossibleMove(pos);
+            }
+        }
+        catch (Exception)
+        {
+            return;
         }
     }
 }
