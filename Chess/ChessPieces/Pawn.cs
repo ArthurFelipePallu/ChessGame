@@ -24,11 +24,9 @@ public class Pawn : Piece
         
         for (var i = 1; i <= firstPawnMove; i++)
         {
-            
             var pos = new Position(PiecePosition.Row + ((int)vDir * i), PiecePosition.Column);
             if (PossibleMoveAtPositionIsOfAllowedTypes(pos,MovementType.Move))
                 SetPositionAsPossibleMove(pos);
-            
         }
         
         VerifyEnPassantMovementIsPossibleInDirection(HorizontalDirections.Left);
@@ -42,12 +40,12 @@ public class Pawn : Piece
     private void VerifyEnPassantMovementIsPossibleInDirection(HorizontalDirections hDir)
     {
         //is in 5th rank
-        if(!PawnIsIn5thRank()) return;
+        if(!PawnIsIn5ThRank()) return;
         //has opponent pawn by its side
         var enemyPawn  = Board.AccessPieceAtCoordinates(PiecePosition.Row, PiecePosition.Column + (int)hDir);
         if (enemyPawn == null) return;
 
-        //opponentspawn moved only once
+        //opponents pawn moved only once
         if(enemyPawn.TimesMoved > 1) return;
         //opponents pawn was last piece moved
         if (Board.LastMovedPiece != enemyPawn) return;
@@ -56,7 +54,7 @@ public class Pawn : Piece
         SetPositionAsPossibleMove(new Position(PiecePosition.Row + (int)vDir, PiecePosition.Column + (int)hDir));
     }
 
-    private bool PawnIsIn5thRank()
+    private bool PawnIsIn5ThRank()
     {
         var isPawnWhite = PieceColor == PieceColor.White;
         if (isPawnWhite)
@@ -103,5 +101,13 @@ public class Pawn : Piece
     private VerticalDirections GetPawnDirectionInBoardByColor()
     {
         return GetPieceColor() == PieceColor.White ? VerticalDirections.Up : VerticalDirections.Down;
+    }
+
+
+    public bool CanPromote()
+    {
+        var rowToPromote = GetPieceColor() == PieceColor.White ? 0 : 7;
+        
+        return PiecePosition.Row == rowToPromote;
     }
 }

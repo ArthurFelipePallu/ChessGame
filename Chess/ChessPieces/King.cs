@@ -118,65 +118,6 @@ public class King : Piece
         // SetPiecePosition(kingOriginalPos);
     }
 
-    private bool IsInCheck()
-    {
-        return IsInCheckFromPawn() ||
-               IsInCheckFromKnight() ||
-               IsInCheckFromDiagonalsDirections() ||
-               IsInCheckFromHorizontalOrVerticalDirection();
-    }
-
-    private bool IsInCheckFromHorizontalOrVerticalDirection()
-    {
-               //Direção para Cima
-        return DirectionHasEnemyPieceOfType(HorizontalDirections.None, VerticalDirections.Up, 8, PieceType.Queen, PieceType.Rook) ||
-               //Direção para Direita 
-               DirectionHasEnemyPieceOfType(HorizontalDirections.Right, VerticalDirections.None, 8, PieceType.Queen, PieceType.Rook) ||
-               //Direção para Baixo
-               DirectionHasEnemyPieceOfType(HorizontalDirections.None, VerticalDirections.Down, 8, PieceType.Queen, PieceType.Rook) ||
-               //Direção para Esquerda
-               DirectionHasEnemyPieceOfType(HorizontalDirections.Left, VerticalDirections.None, 8, PieceType.Queen,PieceType.Rook);
-    }
-
-    private bool IsInCheckFromDiagonalsDirections()
-    {
-        
-                //Direção Diagonal Esquerda para Cima
-        return DirectionHasEnemyPieceOfType(HorizontalDirections.Left,VerticalDirections.Up,8,PieceType.Queen,PieceType.Bishop) ||
-                //Direção Diagonal Direita para Cima
-                DirectionHasEnemyPieceOfType(HorizontalDirections.Right,VerticalDirections.Up,8,PieceType.Queen,PieceType.Bishop) ||
-                //Direção Diagonal Esquerda para Baixo
-                DirectionHasEnemyPieceOfType(HorizontalDirections.Left,VerticalDirections.Down,8,PieceType.Queen,PieceType.Bishop) ||
-                //Direção Diagonal Direita para Baixo
-                DirectionHasEnemyPieceOfType(HorizontalDirections.Right,VerticalDirections.Down,8,PieceType.Queen,PieceType.Bishop);
-    }
-
-    private bool IsInCheckFromKnight()
-    {
-                // L para Esquerda e para cima
-        return PositionIsEnemyPieceOfType(-1 , -2,PieceType.Knight) ||
-                // L para Esquerda e para baixo
-                PositionIsEnemyPieceOfType(1, -2,PieceType.Knight) ||
-                // L para Direita e para cima
-                PositionIsEnemyPieceOfType(-1 , 2,PieceType.Knight) ||
-                // L para Direita e para baixo
-                PositionIsEnemyPieceOfType(1 , 2,PieceType.Knight) ||
-                // L para Cima e para Esquerda
-                PositionIsEnemyPieceOfType(-2 , -1,PieceType.Knight) ||
-                // L para Baixo e para Esquerda
-                PositionIsEnemyPieceOfType(2 , -1,PieceType.Knight) ||
-                // L para Cima e para Direita
-                PositionIsEnemyPieceOfType(-2 , 1,PieceType.Knight) ||
-                // L para Baixo e para Direita
-                PositionIsEnemyPieceOfType(2 , 1,PieceType.Knight);
-    }
-    
-    private bool IsInCheckFromPawn()
-    {
-        var vDir = GetPieceColor() == PieceColor.White ? VerticalDirections.Up : VerticalDirections.Down;
-        return PositionIsEnemyPieceOfType((int)vDir , 1,PieceType.Pawn) ||
-                PositionIsEnemyPieceOfType((int)vDir , -1,PieceType.Pawn);
-    }
 
 
     private bool CanShortCastle()

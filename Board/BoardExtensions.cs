@@ -36,7 +36,7 @@ public static class BoardExtensions
 
         for (var i = 0; i < board.MaxChessBoardSize; i++)
         {
-            board.AddPlayingPiece(PieceColor.Black,PieceType.Pawn,(char)(i+65),7);
+            board.AddPlayingPiece(PieceColor.Black,PieceType.Pawn,(char)(i+65),3);
         }
     }
 
@@ -47,18 +47,14 @@ public static class BoardExtensions
         board.AddPlayingPiece(PieceColor.White,PieceType.Bishop,'c',1);
         board.AddPlayingPiece(PieceColor.White,PieceType.Queen,'d',1);
         board.AddPlayingPiece(PieceColor.White,PieceType.King,'e',1);
-        board.AddPlayingPiece(PieceColor.White,PieceType.Bishop,'f',1);
-        board.AddPlayingPiece(PieceColor.White,PieceType.Knight,'g',1);
-        board.AddPlayingPiece(PieceColor.White,PieceType.Rook,'h',1);
-
-        
-        board.AddPlayingPiece(PieceColor.White,PieceType.Bishop,'c',4);
-        board.AddPlayingPiece(PieceColor.White,PieceType.Queen,'f',3);
-        
-        for (var i = 0; i < board.MaxChessBoardSize; i++)
-        {
-            board.AddPlayingPiece(PieceColor.White,PieceType.Pawn,(char)(i+65),2);
-        }
+        // board.AddPlayingPiece(PieceColor.White,PieceType.Bishop,'f',1);
+        // board.AddPlayingPiece(PieceColor.White,PieceType.Knight,'g',1);
+        // board.AddPlayingPiece(PieceColor.White,PieceType.Rook,'h',1);
+        //
+        // for (var i = 0; i < board.MaxChessBoardSize; i++)
+        // {
+        //     board.AddPlayingPiece(PieceColor.White,PieceType.Pawn,(char)(i+65),2);
+        // }
     }
     
     

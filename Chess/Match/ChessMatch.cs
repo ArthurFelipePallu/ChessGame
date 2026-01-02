@@ -3,6 +3,7 @@ using Chess_Console_Project.Chess.Player;
 using Chess_Console_Project.Board.Exceptions;
 using Chess_Console_Project.Board.Pieces;
 using Chess_Console_Project.Chess.Chess_Movement;
+using Chess_Console_Project.Chess.ChessPieces;
 using Chess_Console_Project.Chess.Enums;
 using Chess_Console_Project.Chess.Exceptions;
 
@@ -175,6 +176,19 @@ public class ChessMatch
         _chessBoard.SetLastMovedPiece(piece);
         _screen.ScreenWriteAndWaitForEnterToContinue(actionMessage);
         
+        if (piece is Pawn pawn)
+        {
+            if (pawn.CanPromote())
+            {
+                var pawnPromotesTo = _screen.AskForPawnPromotion();
+                var pawnChessNotationPos = pawn.GetPiecePosition().ToChessNotationPosition();
+                _chessBoard.RemovePieceFromBoardAt(pawn.GetPiecePosition());
+                _chessBoard.AddPlayingPiece(pawn.GetPieceColor(),pawnPromotesTo,pawnChessNotationPos.Col,pawnChessNotationPos.Row);
+                
+                _screen.PrintBoardAndPlayers(_playerWhite,_playerBlack,_chessBoard,_toPlay);
+                _screen.ScreenWriteAndWaitForEnterToContinue($"{pawn} promoted to {pawn.GetPieceColor()} {pawnPromotesTo} ");
+            }
+        }
         
         if(movementIsSuccessful)
         {

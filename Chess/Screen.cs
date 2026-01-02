@@ -234,6 +234,49 @@ public class Screen
     }
     
     
+    public PieceType AskForPawnPromotion()
+    {
+        var upperNotation = "";
+        var validPromotion = false;
+        while (!validPromotion)
+        {
+            ScreenWrite($" Pawn Promotions Possibilities : ");
+            ScreenWrite($" Bishop - B ");
+            ScreenWrite($" Knight - N ");
+            ScreenWrite($" Rook   - R ");
+            ScreenWrite($" Queen  - Q ");
+            SkipLine();
+            
+            ScreenWrite($" Choose a piece type to promote your pawn : ");
+            var notation =  Console.ReadLine();
+            upperNotation = notation.ToUpper();
+        
+            if (upperNotation != "B" && upperNotation != "N" && upperNotation != "Q" && upperNotation != "R")
+            {
+                ScreenWriteAndWaitForEnterToContinue("Invalid Pawn Promotion , please try again.");
+            }
+            else
+            {
+                validPromotion = true;
+            }
+                
+        }
+
+
+        switch (upperNotation)
+        {
+            case "B":
+                return PieceType.Bishop;
+            case "N":
+                return PieceType.Knight;
+            case "R":
+                return PieceType.Rook;
+            case "Q":
+                return PieceType.Queen;
+        }
+
+        return PieceType.Pawn;
+    }
     
     
     /// <summary>
