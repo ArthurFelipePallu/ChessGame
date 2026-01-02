@@ -10,6 +10,7 @@ public class ChessBoard
     private Piece[,] Board { get; }
     private HashSet<Piece> _chessPieces;
     private HashSet<Piece> _capturedPieces;
+    public Piece LastMovedPiece { get; private set; }
     public int MaxChessBoardSize { get; } = 8;
 
     private bool[,] AllTargetedSquares;
@@ -101,15 +102,27 @@ public class ChessBoard
     public void UpdateAllTargetedSquaresInBoardWithAdversaryTargets(PieceColor pieceColor)
     {
         AllTargetedSquares = GetAllTargetedSquaresInBoardByPlayer(AdversaryPieceColor(pieceColor));
+        //PrintAuxiliaryBoard(AllTargetedSquares);
+    }
+
+    public void PrintPiecePossibleMoves(Piece piece)
+    {
+        PrintAuxiliaryBoard(piece.GetAllPossibleMoves());
+    }
+
+    private void PrintAuxiliaryBoard(bool[,] auxBoard)
+    {
         var markedSquare = " X ";
         var emptySquare = " - ";
         for (var i = 0; i < MaxChessBoardSize; i++)
         {
-            for(var j = 0; j < MaxChessBoardSize; j++)
-                Console.Write($"{ (AllTargetedSquares[i, j] ?  markedSquare:emptySquare)}");
+            for (var j = 0; j < MaxChessBoardSize; j++)
+                Console.Write($"{(auxBoard[i, j] ? markedSquare : emptySquare)}");
             Console.WriteLine();
         }
     }
+    
+
     public bool[,] GetAllTargetedSquaresInBoardByPlayer(PieceColor pieceColor)
     {
         var allTargetedSquaresInBoard = new bool[MaxChessBoardSize, MaxChessBoardSize];
@@ -152,6 +165,16 @@ public class ChessBoard
         return  pieceColor == PieceColor.White ? PieceColor.Black : PieceColor.White;
     }
 
+
+
+    public void SetLastMovedPiece(Piece piece)
+    {
+        LastMovedPiece = piece;
+    }
+    
+    
+    
+    
     /// <summary>
     /// REMOVE PIECE METHODS
     /// </summary>
@@ -172,11 +195,22 @@ public class ChessBoard
     }
     public void RemovePieceFromPlay(Piece piece)
     {
+        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = null;
         _capturedPieces.Add(piece);
+    }
+
+    public void ReturnPieceToPlay(Piece piece)
+    {
+        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = piece;
+        _capturedPieces.Remove(piece);
     }
     
     
 
+    
+    
+    
+    
     /// <summary>
     /// PUT PIECES METHOD
     /// </summary>
@@ -231,9 +265,19 @@ public class ChessBoard
     }
     public Piece AccessPieceAtCoordinates(int row, int col)
     {
-        ValidateBoardCoordinates(row,col);
+        try
+        {
+            ValidateBoardCoordinates(row,col);
         
-        return Board[row, col];
+            return Board[row, col];
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+           
+        }
+
+        return null;
     }
 
 

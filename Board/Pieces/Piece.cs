@@ -77,6 +77,10 @@ public abstract class Piece
     {
         TimesMoved++;
     }
+    public void DecreaseTimesMoved()
+    {
+        TimesMoved--;
+    }
     protected void ClearPossibleMoves()
     {
         for (int i = 0; i < Board.MaxChessBoardSize; i++)
@@ -93,16 +97,21 @@ public abstract class Piece
     }
     public bool HasAtLeastOnePossibleMove()
     {
-        for (var i = 0; i < _possibleMoves.GetLength(0) - 1; i++)
+        for (var i = 0; i < _possibleMoves.GetLength(0) ; i++)
         {
-            for (var j = 0; j < _possibleMoves.GetLength(1) -1 ; j++)
+            for (var j = 0; j < _possibleMoves.GetLength(1)  ; j++)
             {
                 if (_possibleMoves[i, j])
                     return true;
             }
         }
-
         return false;
+    }
+    
+    public bool ChessNotationPositionIsInPossibleMoves(ChessNotationPosition chessNotationPos)
+    {
+        var pos = chessNotationPos.ToPosition();
+        return CoordinatesIsInPossibleMoves(pos.Row, pos.Column);
     }
     public bool PositionIsInPossibleMoves(Position pos)
     {

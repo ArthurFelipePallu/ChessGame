@@ -6,7 +6,7 @@ using Chess_Console_Project.Chess.Match;
 var match = new ChessMatch();
 
 
-while(!match.IsMatchFinished())
+while(!match.IsExitingGame())
 {
     match.UpdateMatch();
 }

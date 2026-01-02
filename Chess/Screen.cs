@@ -7,7 +7,7 @@ namespace Chess_Console_Project.Chess;
 
 public class Screen
 {
-    private string _emptySquare = "   ";
+    private string _emptySquare = " ";
     private const int MaxChessBoardSize = 8;
     private ConsoleColor _currentForeGroundColor = ConsoleColor.White;
     
@@ -30,6 +30,22 @@ public class Screen
     public Screen()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+    }
+    
+    public void PrintBoardAndPlayers(ChessPlayer playerWhite, ChessPlayer playerBlack , ChessBoard chessBoard)
+    {
+        ClearScreen();
+        PrintPlayerDetailedInformation(playerBlack, chessBoard.GetCapturedPieces(PieceColor.White));
+        PrintBoard(chessBoard);
+        PrintPlayerDetailedInformation(playerWhite, chessBoard.GetCapturedPieces(PieceColor.Black));
+    }
+
+    public void PrintBoardWithPiecePossibleMovesAndPlayers(Piece piece,ChessPlayer playerWhite, ChessPlayer playerBlack , ChessBoard chessBoard)
+    {
+        Screen.ClearScreen();
+        PrintPlayerDetailedInformation(playerBlack, chessBoard.GetCapturedPieces(PieceColor.White));
+        PrintBoardWithPiecePossibleMovements(chessBoard,piece.GetAllPossibleMoves());
+        PrintPlayerDetailedInformation(playerWhite, chessBoard.GetCapturedPieces(PieceColor.Black));
     }
     
     
@@ -60,7 +76,7 @@ public class Screen
                 BoardBackGroundColor(i,j , possiblePieceMoves[i,j]);
                 var piece = board.AccessPieceAtCoordinates(i, j);
                 ChangeForeGroundColorTo(GetPieceConsoleColor(piece));
-                var toWrite = GetPieceUnicodeOrEmptySquare(piece);
+                var toWrite = $" {GetPieceUnicodeOrEmptySquare(piece)} ";
                 Console.Write(toWrite);
             }
             Console.BackgroundColor = ConsoleColor.Black;
@@ -118,7 +134,7 @@ public class Screen
     {
         if (piece == null) return _emptySquare;
         
-        return piece.GetPieceColor() == PieceColor.White ? $" {GetWhitePieceUnicode(piece)} " : $" {GetBlackPieceUnicode(piece)} ";
+        return piece.GetPieceColor() == PieceColor.White ? $"{GetWhitePieceUnicode(piece)}" : $"{GetBlackPieceUnicode(piece)}";
         
     }
 
@@ -162,22 +178,17 @@ public class Screen
     /// </summary>
 
 
-    public void PrintPlayerDetailedInformation(ChessPlayer player, HashSet<Piece> capturedPieces)
+    private void PrintPlayerDetailedInformation(ChessPlayer player, HashSet<Piece> capturedPieces)
     {
-        Console.WriteLine($"{player.Name}  ELO: {player.Elo}");
-        Console.WriteLine($"Playing with {player.PlayingColor.ToString()}");
+        Console.WriteLine($"{_emptySquare} {player.Name}  ELO: {player.Elo}");
+        Console.WriteLine($"{_emptySquare} Playing with {player.PlayingColor.ToString()}");
 
-        Console.Write("Captured: ");
+        Console.Write($"{_emptySquare} Captured: ");
         foreach (var piece in capturedPieces)
         {
-            Console.Write($" {GetPieceUnicodeOrEmptySquare(piece)} ");
+            Console.Write($"{GetPieceUnicodeOrEmptySquare(piece)} ");
         }
         Console.WriteLine();
-    }
-    public void PrintBoardAndPlayerToMove(ChessBoard board,ChessPlayer player)
-    {
-        PrintBoard(board);
-        AnnouncePlayerToMove(player);
     }
     public ChessNotationPosition AskPlayerForPieceInBoard()
     {

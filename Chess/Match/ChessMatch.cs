@@ -11,6 +11,7 @@ namespace Chess_Console_Project.Chess.Match;
 public class ChessMatch
 {
     private int _movesCount = 0;
+    private Piece _lastCapturedPiece = null;
     ChessBoard _chessBoard;
     MatchStatus _matchStatus;
     private PieceColor _toPlay = PieceColor.White;
@@ -18,6 +19,7 @@ public class ChessMatch
     private ChessPlayer _playerWhite;
     private ChessPlayer _playerBlack;
     private ChessMovement _chessMovement;
+    
 
     public ChessMatch()
     {
@@ -52,7 +54,15 @@ public class ChessMatch
             case MatchStatus.Playing:
                 try
                 {
-                    PrintBoardAndPlayers();
+                    if (IsKingOfColorInCheckMate(_toPlay))
+                    {
+                        _screen.ScreenWriteAndWaitForEnterToContinue($"Player {GetPlayingPlayer().Name} received a checkmate");
+                        _matchStatus = MatchStatus.Finished;
+                        break;
+                    }
+                    
+                    
+                    _screen.PrintBoardAndPlayers(_playerWhite,_playerBlack,_chessBoard);
                     _screen.AnnouncePlayerToMove(PlayerToMove());
 
                     var originChessNotationPositionPosition = _screen.AskPlayerForPieceInBoard();
@@ -66,14 +76,15 @@ public class ChessMatch
                     // _screen.ScreenWriteAndWaitForEnterToContinue("");
                     if( !piece.HasAtLeastOnePossibleMove())
                     {
+                        
                         _screen.ScreenWriteAndWaitForEnterToContinue($"The Selected {piece} has no legal moves , please select another piece");
                         break;
                     }
-                    PrintBoardWithPiecePossibleMovesAndPlayers(piece);
-                    
+                    _screen.PrintBoardWithPiecePossibleMovesAndPlayers(piece,_playerWhite,_playerBlack,_chessBoard);
+
                     var destinationChessNotationPosition = _screen.AskPlayerForPieceDestinationInBoard(piece);
                     
-                    if (!piece.PositionIsInPossibleMoves(destinationChessNotationPosition.ToPosition()))
+                    if (!piece.ChessNotationPositionIsInPossibleMoves(destinationChessNotationPosition))
                     {
                         _screen.ScreenWriteAndWaitForEnterToContinue($"The {piece} can not move to the {destinationChessNotationPosition} square");
                         break;
@@ -86,6 +97,10 @@ public class ChessMatch
                 }
                 _screen.ScreenWriteAndWaitForEnterToContinue($"{PlayerToMove().Name}'s turn is over ");
                 break;
+            case MatchStatus.Finished:
+                _screen.ScreenWriteAndWaitForEnterToContinue($"Player{GetNotPlayingPlayer().Name} won the match");
+                _matchStatus = MatchStatus.ExitingGame;
+                break;
             case MatchStatus.ExitingGame:
                 break;
             default:
@@ -93,36 +108,20 @@ public class ChessMatch
         }
     }
 
-    private void PrintBoardAndPlayers()
-    {
-        Screen.ClearScreen();
-        _screen.PrintPlayerDetailedInformation(_playerBlack, _chessBoard.GetCapturedPieces(PieceColor.White));
-        _screen.PrintBoard(_chessBoard);
-        _screen.PrintPlayerDetailedInformation(_playerWhite, _chessBoard.GetCapturedPieces(PieceColor.Black));
-    }
-
-    private void PrintBoardWithPiecePossibleMovesAndPlayers(Piece piece)
-    {
-        Screen.ClearScreen();
-        _screen.PrintPlayerDetailedInformation(_playerBlack, _chessBoard.GetCapturedPieces(PieceColor.White));
-        _screen.PrintBoardWithPiecePossibleMovements(_chessBoard,piece.GetAllPossibleMoves());
-        _screen.PrintPlayerDetailedInformation(_playerWhite, _chessBoard.GetCapturedPieces(PieceColor.Black));
-    }
+    
     private void WaitForPlayers()
     {
         //Not gonna wait 
         Console.WriteLine("Entering Players Magnum and Hikaru");
         EnterPlayer(new ChessPlayer("Magnus",2839,PieceColor.White));
         EnterPlayer(new ChessPlayer("Hikaru",2813,PieceColor.Black));
-        
         if(CanStartGame())
             _matchStatus = MatchStatus.Starting;
-
     }
 
-    public bool IsMatchFinished()
+    public bool IsExitingGame()
     {
-        return _matchStatus == MatchStatus.Finished;
+        return _matchStatus == MatchStatus.ExitingGame;
     }
 
 
@@ -157,12 +156,22 @@ public class ChessMatch
             movementIsSuccessful = MovePieceTo(piece,destination,out actionMessage);
             MoveRookInCastles(piece,castlesDir);
         }
+        else if (IsMovementEnPassent(piece, destination))
+        {
+            var positionToTake = new Position(piece.GetPiecePosition().Row, destination.Column);
+            var pieceToTake = _chessBoard.AccessPieceAtPosition(positionToTake);
+            _chessBoard.RemovePieceFromPlay(pieceToTake);
+            
+            movementIsSuccessful = MovePieceTo(piece,destination,out actionMessage);
+        }
         else 
             movementIsSuccessful = MovePieceTo(piece,destination,out actionMessage);
 
-        
-        PrintBoardAndPlayers();
+        _screen.PrintBoardAndPlayers(_playerWhite,_playerBlack,_chessBoard);
+        _chessBoard.SetLastMovedPiece(piece);
         _screen.ScreenWriteAndWaitForEnterToContinue(actionMessage);
+        
+        
         if(movementIsSuccessful)
         {
             ChangePlayerToMove();
@@ -175,6 +184,12 @@ public class ChessMatch
         if (piece.GetPieceType() != PieceType.King) return false;
         var x = destination.Column - piece.GetPiecePosition().Column;
         return Math.Abs(x) == 2;
+    }
+    private bool IsMovementEnPassent(Piece piece, Position destination)
+    {
+        if (piece.GetPieceType() != PieceType.Pawn) return false;
+        if (piece.GetPiecePosition().Column == destination.Column) return false;
+        return _chessBoard.AccessPieceAtPosition(destination) == null;
     }
 
     private HorizontalDirections GetCastleDirection(Piece king, Position destination)
@@ -202,11 +217,14 @@ public class ChessMatch
         
         var destinationPiece = _chessBoard.AccessPieceAtPosition(destination);
         if(destinationPiece != null)
+        {
+            _lastCapturedPiece = destinationPiece;
             _chessBoard.RemovePieceFromPlay(destinationPiece);
+        }
         
         _chessBoard.PutPieceAtDestinationPosition(piece, destination);
         
-        if (_chessBoard.IsKingInCheck(piece.GetPieceColor()))
+        if (IsKingOfColorInCheck(piece.GetPieceColor()))
         {
             _chessBoard.RemovePieceFromBoardAt(destination);
             _chessBoard.PutPieceAtDestinationPosition(piece,originalPiecePosition);
@@ -218,12 +236,13 @@ public class ChessMatch
         piece.IncreaseTimesMoved();
         
         message = destinationPiece == null
-            ? $"[ CHESS MATCH ] Piece {piece} moved to destination {destination}"
-            : $"[ CHESS MATCH ] Piece [{piece}] took [{destinationPiece}] at destination [{destination}]";
+            ? $"[ CHESS MATCH ] Piece {piece} moved to destination {destination.ToChessNotationPosition()}"
+            : $"[ CHESS MATCH ] Piece [{piece}] took [{destinationPiece}] at destination [{destination.ToChessNotationPosition()}]";
 
 
         return true;
     }
+
  
     private void ChangePlayerToMove()
     {
@@ -233,7 +252,14 @@ public class ChessMatch
         if(_toPlay == PieceColor.White)
             IncreaseTurnCount();
     }
-    
+    private ChessPlayer GetPlayingPlayer()
+    {
+        return _toPlay == PieceColor.White ? _playerWhite : _playerBlack;
+    }
+    private ChessPlayer GetNotPlayingPlayer()
+    {
+        return _toPlay == PieceColor.White ? _playerBlack : _playerWhite;
+    }
     
 
     /// <summary>
@@ -272,6 +298,50 @@ public class ChessMatch
     {
         return _toPlay == PieceColor.White ? _playerWhite : _playerBlack;
     }
- 
-    
+
+
+    private bool IsKingOfColorInCheck(PieceColor color)
+    {
+        return _chessBoard.IsKingInCheck(color);
+    }
+    private bool IsKingOfColorInCheckMate(PieceColor color)
+    {
+        if(!IsKingOfColorInCheck(color)) return false;
+
+        var lastPieceCapturedHolder = _lastCapturedPiece;
+        foreach (var piece in _chessBoard.GetChessPiecesInPlay(color))
+        {
+            var originPosition = piece.GetPiecePosition();
+            var mat = piece.GetAllPossibleMoves();
+            for (var i = 0; i < mat.GetLength(0); i++)
+            {
+                for (var j = 0; j < mat.GetLength(1); j++)
+                {
+                    if (mat[i, j])
+                    {
+                        _lastCapturedPiece = null;
+                        var destination = new Position(i, j);
+                        var moveIsPossible = MovePieceTo(piece, destination, out var msg);
+                        
+                        if (moveIsPossible)
+                        {
+                            _chessBoard.RemovePieceFromBoardAt(destination);
+                            _chessBoard.PutPieceAtDestinationPosition(piece, originPosition);
+                            if(_lastCapturedPiece != null)
+                                _chessBoard.ReturnPieceToPlay(_lastCapturedPiece);
+                            
+                            _lastCapturedPiece = lastPieceCapturedHolder;
+                            piece.DecreaseTimesMoved(); 
+                            return false;
+                        }
+                        if(_lastCapturedPiece != null)
+                            _chessBoard.ReturnPieceToPlay(_lastCapturedPiece);
+                    }
+                }   
+            }
+
+        }
+        _lastCapturedPiece = lastPieceCapturedHolder;
+        return true;
+    }
 }

@@ -49,6 +49,7 @@ public class King : Piece
         
          //Posição de Baixo e Direita
          CheckPossibleMoveIsNotCheck(VerticalDirections.Down,HorizontalDirections.Right);
+         
     }
 
     public override void CalculatePossibleAttackMoves()
