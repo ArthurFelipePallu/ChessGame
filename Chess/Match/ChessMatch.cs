@@ -39,18 +39,18 @@ public class ChessMatch
             case MatchStatus.MainMenu:
                 _screen.PrintMainMenu();
                 _screen.ScreenWriteAndWaitForEnterToContinue("Welcome to chess console!");
-                _matchStatus = MatchStatus.WaitingForPlayers;
+                AlterMatchStatus(MatchStatus.WaitingForPlayers);
                 break;
             case MatchStatus.WaitingForPlayers:
                 WaitForPlayers();
                 _screen.ScreenWriteAndWaitForEnterToContinue("Players have gathered, Starting Game");
                 break;
             case MatchStatus.WaitingForPlayer:
+                //Implement Later with FrontEnd
                 break;
             case MatchStatus.Starting:
                 CreateChessBoard();
-
-                _matchStatus = MatchStatus.Playing;
+                AlterMatchStatus(MatchStatus.Playing);
                 break;
             case MatchStatus.Playing:
                 try
@@ -98,13 +98,13 @@ public class ChessMatch
                 {
                     _screen.PrintBoardAndPlayers(_playerWhite,_playerBlack,_chessBoard,_toPlay);
                     _screen.ScreenWriteAndWaitForEnterToContinue($"Player {GetPlayingPlayer().Name} received a checkmate");
-                    _matchStatus = MatchStatus.Finished;
+                    AlterMatchStatus(MatchStatus.Finished);
                 }
                 break;
             case MatchStatus.Finished:
                 _screen.PrintCrown();
                 _screen.ScreenWriteAndWaitForEnterToContinue($"Player {GetNotPlayingPlayer().Name} won the match");
-                _matchStatus = MatchStatus.ExitingGame;
+                AlterMatchStatus(MatchStatus.ExitingGame);
                 break;
             case MatchStatus.ExitingGame:
                 break;
@@ -129,6 +129,17 @@ public class ChessMatch
         return _matchStatus == MatchStatus.ExitingGame;
     }
 
+    
+    
+    /// <summary>
+    /// MATCH METHODS
+    /// </summary>
+    private void AlterMatchStatus(MatchStatus status)
+    {
+        _matchStatus = status;
+    }
+
+    
 
 
     /// <summary>

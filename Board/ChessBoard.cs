@@ -1,19 +1,21 @@
-﻿using Chess_Console_Project.Board.Exceptions;
-using Chess_Console_Project.Board.Pieces;
-using Chess_Console_Project.Chess.ChessPieces;
+﻿using Chess_Console_Project.Board.Pieces;
+using Chess_Console_Project.Board.Exceptions;
 using Chess_Console_Project.Chess.Exceptions;
+using Chess_Console_Project.Chess.ChessPieces;
 
 namespace Chess_Console_Project.Board;
 
 public class ChessBoard
 {
+
     private Piece[,] Board { get; }
     private HashSet<Piece> _chessPieces;
     private HashSet<Piece> _capturedPieces;
-    public Piece LastMovedPiece { get; private set; }
-    public int MaxChessBoardSize { get; } = 8;
+    
 
     private bool[,] AllTargetedSquares;
+    public int MaxChessBoardSize { get; } = 8;
+    public Piece LastMovedPiece { get; private set; }
 
     public ChessBoard()
     {
@@ -61,24 +63,75 @@ public class ChessBoard
         throw new BoardException("[CHESS BOARD] Invalid piece type");
     }
 
+  
+    /// <summary>
+    ///  UPDATES
+    /// </summary>
+    public void UpdateAllTargetedSquaresInBoardWithAdversaryTargets(PieceColor pieceColor)
+    {
+        AllTargetedSquares = GetAllTargetedSquaresInBoardByPlayer(AdversaryPieceColor(pieceColor));
+    }
+    public void SetLastMovedPiece(Piece piece)
+    {
+        LastMovedPiece = piece;
+    }
+    
 
+    /// <summary>
+    /// REMOVE PIECE METHODS
+    /// </summary>
+    public Piece RemovePieceFromBoardAt(Position pos)
+    {
+        return RemovePieceFromBoardAtCoordinates(pos.Row, pos.Column);
+    }
+    public Piece RemovePieceFromBoardAtCoordinates(int row,int col)
+    {
+        if (!HasPieceAtCoordinate(row, col))
+        {
+            throw new BoardException($"[CHESS BOARD] No Piece to remove at [ {row} , {col} ]");
+        }
 
+        var removedPiece = Board[row, col];
+        Board[row, col] = null;
+        return removedPiece;
+    }
+    public void RemovePieceFromPlay(Piece piece)
+    {
+        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = null;
+        _capturedPieces.Add(piece);
+    }
     
+    /// <summary>
+    /// PUT PIECES METHOD
+    /// </summary>
+    public void PutPieceAtDestinationPosition(Piece piece , Position destination)
+    {
+        PutPieceAtDestinationCoordinates(piece,destination.Row,destination.Column);
+        piece.SetPiecePosition(destination);
+    }
+    private void PutPieceAtDestinationCoordinates(Piece piece , int row , int col)
+    {
+        Board[row, col] = piece;
+    }
+    public void ReturnPieceToPlay(Piece piece)
+    {
+        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = piece;
+        _capturedPieces.Remove(piece);
+    }
     
-    
+    /// <summary>
+    ///  VERIFICATIONS
+    /// </summary>
     public bool IsKingInCheck(PieceColor color)
     {
         var king = GetKing(color);
         UpdateAllTargetedSquaresInBoardWithAdversaryTargets(color);
         return IsSquareInPositionTargetedByOpponent(king.GetPiecePosition());
     }
-
-
     public bool IsSquareInPositionTargetedByOpponent(Position position)
     {
         return IsSquareInCoordinatesTargetedByOpponent(position.Row, position.Column);
     }
-
     public bool IsSquareInCoordinatesTargetedByOpponent(int row, int column)
     {
         try
@@ -91,38 +144,30 @@ public class ChessBoard
             return true;
         }
     }
-
-
+    public bool HasPieceAtChessNotationPosition(ChessNotationPosition notationPosition)
+    {
+        return HasPieceAtPosition(notationPosition.ToPosition());
+    }
+    public bool HasPieceAtPosition(Position position)
+    {
+        return HasPieceAtCoordinate(position.Row, position.Column);
+    }
+    public bool HasPieceAtCoordinate(int row, int col)
+    {
+        ValidateBoardCoordinates(row,col);
+        
+        return Board[row, col] is not null;
+    }
+    
+    
+    /// <summary>
+    /// ACCESS METHODS
+    /// </summary>
     public Piece GetKing(PieceColor color)
     {
         var piecesOfColor = GetChessPiecesInPlay(color);
         return piecesOfColor.FirstOrDefault(piece => piece.GetPieceType() == PieceType.King) ?? throw new ChessException("[CHESS PIECES] No king was found");
     }
-
-    public void UpdateAllTargetedSquaresInBoardWithAdversaryTargets(PieceColor pieceColor)
-    {
-        AllTargetedSquares = GetAllTargetedSquaresInBoardByPlayer(AdversaryPieceColor(pieceColor));
-        //PrintAuxiliaryBoard(AllTargetedSquares);
-    }
-
-    public void PrintPiecePossibleMoves(Piece piece)
-    {
-        PrintAuxiliaryBoard(piece.GetAllPossibleMoves());
-    }
-
-    private void PrintAuxiliaryBoard(bool[,] auxBoard)
-    {
-        var markedSquare = " X ";
-        var emptySquare = " - ";
-        for (var i = 0; i < MaxChessBoardSize; i++)
-        {
-            for (var j = 0; j < MaxChessBoardSize; j++)
-                Console.Write($"{(auxBoard[i, j] ? markedSquare : emptySquare)}");
-            Console.WriteLine();
-        }
-    }
-    
-
     public bool[,] GetAllTargetedSquaresInBoardByPlayer(PieceColor pieceColor)
     {
         var allTargetedSquaresInBoard = new bool[MaxChessBoardSize, MaxChessBoardSize];
@@ -159,102 +204,6 @@ public class ChessBoard
         }
         return aux;
     }
-
-    private PieceColor AdversaryPieceColor(PieceColor pieceColor)
-    {
-        return  pieceColor == PieceColor.White ? PieceColor.Black : PieceColor.White;
-    }
-
-
-
-    public void SetLastMovedPiece(Piece piece)
-    {
-        LastMovedPiece = piece;
-    }
-    
-    
-    
-    
-    /// <summary>
-    /// REMOVE PIECE METHODS
-    /// </summary>
-    public Piece RemovePieceFromBoardAt(Position pos)
-    {
-        return RemovePieceFromBoardAtCoordinates(pos.Row, pos.Column);
-    }
-    public Piece RemovePieceFromBoardAtCoordinates(int row,int col)
-    {
-        if (!HasPieceAtCoordinate(row, col))
-        {
-            throw new BoardException($"[CHESS BOARD] No Piece to remove at [ {row} , {col} ]");
-        }
-
-        var removedPiece = Board[row, col];
-        Board[row, col] = null;
-        return removedPiece;
-    }
-    public void RemovePieceFromPlay(Piece piece)
-    {
-        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = null;
-        _capturedPieces.Add(piece);
-    }
-
-    public void ReturnPieceToPlay(Piece piece)
-    {
-        Board[piece.GetPiecePosition().Row,piece.GetPiecePosition().Column] = piece;
-        _capturedPieces.Remove(piece);
-    }
-    
-    
-
-    
-    
-    
-    
-    /// <summary>
-    /// PUT PIECES METHOD
-    /// </summary>
-    public void PutPieceAtDestinationPosition(Piece piece , Position destination)
-    {
-        PutPieceAtDestinationCoordinates(piece,destination.Row,destination.Column);
-        piece.SetPiecePosition(destination);
-    }
-    private void PutPieceAtDestinationCoordinates(Piece piece , int row , int col)
-    {
-        Board[row, col] = piece;
-    }
-    
-    
-    
-    
-    /// <summary>
-    /// VERIFICATION METHODS
-    /// </summary>
-    public bool HasPieceAtChessNotationPosition(ChessNotationPosition notationPosition)
-    {
-        return HasPieceAtPosition(notationPosition.ToPosition());
-    }
-    public bool HasPieceAtPosition(Position position)
-    {
-        return HasPieceAtCoordinate(position.Row, position.Column);
-    }
-    public bool HasPieceAtCoordinate(int row, int col)
-    {
-        ValidateBoardCoordinates(row,col);
-        
-        return Board[row, col] is not null;
-    }
-    public PieceColor BoardPositionHasPieceOfColor(Position position)
-    {
-        var piece = AccessPieceAtPosition(position);
-        return piece.GetPieceColor();
-    }
-    
-
-
-    /// <summary>
-    /// ACCESS METHODS
-    /// </summary>
     public Piece AccessPieceAtChessNotationPosition(ChessNotationPosition notationPosition)
     {
         return AccessPieceAtPosition(notationPosition.ToPosition());
@@ -279,8 +228,10 @@ public class ChessBoard
 
         return null;
     }
-
-
+    private PieceColor AdversaryPieceColor(PieceColor pieceColor)
+    {
+        return  pieceColor == PieceColor.White ? PieceColor.Black : PieceColor.White;
+    }
 
 
     /// <summary>

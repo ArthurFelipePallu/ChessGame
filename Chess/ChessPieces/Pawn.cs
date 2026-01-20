@@ -32,8 +32,6 @@ public class Pawn : Piece
         VerifyEnPassantMovementIsPossibleInDirection(HorizontalDirections.Left);
         
         VerifyEnPassantMovementIsPossibleInDirection(HorizontalDirections.Right);
-        
-        Board.PrintPiecePossibleMoves(this);
     }
 
 
